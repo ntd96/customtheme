@@ -26,7 +26,7 @@ wp_footer(); // export
                     <?php
                     $args = array(
                         'post_type' => 'services',
-                        'posts_per_page' => -1,
+                        'posts_per_page' => 6,
                         'orderby' => 'date',
                         'order' => 'ASC',
                         'post_status' => 'publish'
