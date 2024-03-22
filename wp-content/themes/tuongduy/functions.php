@@ -134,13 +134,15 @@ function tuongduy_nav_menu()
                 <span class="fa fa-bars"></span>
             </button>
             <?php tuongduy_menu() ?>
+            <?php get_search_form(); ?>
             <butaton type="button" class="btn text-secondary ms-3" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fa fa-search"></i></butaton>
             <a href="https://buimanhduc.com" class="btn btn-secondary text-light rounded-pill py-2 px-4 ms-3">Bùi Mạnh Đức</a>
         </nav>
     </div>
 <?php }
 
-function tuongduy_footer_menu() {
+function tuongduy_footer_menu()
+{
     $menu_args = array(
         'theme_location' => 'footer_menu',
         'container' => 'div',
@@ -151,5 +153,25 @@ function tuongduy_footer_menu() {
         <h5 class="text-white mb-4">Popular Link</h5>
         <?php wp_nav_menu($menu_args); ?>
     </div>
-    <?php
+<?php
+}
+
+// Hàm phân trang
+function tuongduy_pagination($recent_post, $custom_posts_per_page) {
+    global $wp_query;
+    // $post_per_page = get_option('posts_per_page');
+    // $post_per_page = $custom_posts_per_page;
+    $total_pages = ceil($recent_post->found_posts / $custom_posts_per_page);
+    // echo $total_posts;
+    $current_page = max(1, get_query_var('paged') ? get_query_var('paged') : 1); // Xác định trang hiện tại
+    echo '<div class="pagination">';
+    echo paginate_links(array(
+        'base' => str_replace(999999999, '%#%', esc_url(get_pagenum_link(999999999))),
+        'format' => '?paged=%#%',
+        'current' => $current_page,
+        'total' => $total_pages,
+        'prev_text' => __(' << Previous', 'tuongduy'),
+        'next_text' => __('Next >> ', 'tuongduy'),
+    ));
+    echo '</div>';
 }
