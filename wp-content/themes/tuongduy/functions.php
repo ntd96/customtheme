@@ -45,6 +45,17 @@ function tuongduy_enqueue_script()
 }
 add_action('wp_enqueue_scripts', 'tuongduy_enqueue_script');
 
+// Hàm để debug
+function debug_to_console($data, $context = 'Debug in Console')
+{
+    // Buffering to solve problems frameworks, like header() in this and not a solid return.
+    ob_start();
+    $output  = 'console.info(\'' . $context . ':\');';
+    $output .= 'console.log(' . json_encode($data) . ');';
+    $output  = sprintf('<script>%s</script>', $output);
+    echo $output;
+}
+
 // Add thumbnnail vào theme
 function tuongduy_theme_option()
 {
@@ -78,33 +89,7 @@ function tuongduy_theme_option()
     // Add format post
     add_theme_support('post-formats', array('aside', 'gallery', 'video', 'image', 'quote', 'link'));
 }
-
 add_action('init', 'tuongduy_theme_option');
-
-// Tạo mới danh sách services CUSTOM POST TYPE
-// if(!function_exists('tuongduy_option')) {
-//     function tuongduy_option($option ='', $default = null) {
-//         $option = get_option('manhduc_cs_option');
-//         return (isset($option[$option])) ? $option[$option] : $default;
-//     }
-// }
-// class Tuongduy_Services {
-//     function __construct() {
-//         add_action('init', array(__CLASS__, 'tuongduy_services_init'));
-//         add_filter('single_template', array($this, 'portfolio_single'));
-//     }
-// }
-// function tuongduy_services_init() {
-//     if(function_exists('tuongduy_option')) {
-//         $slug_text = tuongduy_option('Services_slug');
-//     }
-//     $slug = !empty($slug_text) ? $slug_text : 'dich-vu';
-
-// }
-// register_post_type('services', array(
-//     'puclic' => true,
-
-// ));
 
 // MENU NAV
 // dyamic menu for user wp admin
@@ -113,7 +98,7 @@ function tuongduy_menu()
     $menu_args = array(
         'theme_location' => 'primary_menu',
         'container' => 'div',
-        'container_class' => 'pcollapse navbar-collapse',
+        'container_class' => 'collapse navbar-collapse',
         'container_id' => 'navbarCollapse',
         'menu_class' => 'navbar-nav ms-auto py-0',
         'fallback_cb' => 'false'
@@ -122,7 +107,8 @@ function tuongduy_menu()
 }
 // Hàm khai báo mục nav của code để gọi vào header
 function tuongduy_nav_menu()
-{ ?>
+{
+?>
     <div class="container-xxl position-relative p-0">
 
         <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
@@ -134,8 +120,26 @@ function tuongduy_nav_menu()
                 <span class="fa fa-bars"></span>
             </button>
             <?php tuongduy_menu() ?>
-            <?php get_search_form(); ?>
-            <butaton type="button" class="btn text-secondary ms-3" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fa fa-search"></i></butaton>
+
+            <button type="button" class="btn text-secondary ms-3" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fa fa-search"></i></button>
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function() {
+                    $('#searchModal .btn-light').click(function() {
+                        var searchTerm = $('#searchModal input').val().trim();
+                        if (searchTerm !== '') {
+                            window.location.href = '<?php echo esc_url(home_url('/')); ?>?s=' + encodeURIComponent(searchTerm);
+                        }
+                    });
+
+                    $('#searchInput').keypress(function(e) {
+                        if (e.key === 'Enter') {
+                            $('#searchButton').click();
+                        }
+                    });
+                });
+            </script>
             <a href="https://buimanhduc.com" class="btn btn-secondary text-light rounded-pill py-2 px-4 ms-3">Bùi Mạnh Đức</a>
         </nav>
     </div>
@@ -153,11 +157,12 @@ function tuongduy_footer_menu()
         <h5 class="text-white mb-4">Popular Link</h5>
         <?php wp_nav_menu($menu_args); ?>
     </div>
-<?php
+    <?php
 }
 
 // Hàm phân trang
-function tuongduy_pagination($recent_post, $custom_posts_per_page) {
+function tuongduy_pagination($recent_post, $custom_posts_per_page)
+{
     global $wp_query;
     // $post_per_page = get_option('posts_per_page');
     // $post_per_page = $custom_posts_per_page;
@@ -174,4 +179,30 @@ function tuongduy_pagination($recent_post, $custom_posts_per_page) {
         'next_text' => __('Next >> ', 'tuongduy'),
     ));
     echo '</div>';
+}
+
+// Hàm breadcrumb
+function tuongduy_breadcrumb()
+{
+    $categories = get_the_category();
+    if ($categories) {
+    ?>
+        <div class="breadcrumb">
+            <a href="<?php esc_url(home_url('/')); ?>">Home | </a>
+            <?php
+            foreach ($categories as $category) :
+            ?>
+                <a href="<?php esc_url(get_category_link($category->term_id)) ?>"> <?php echo $category->name ?> &nbsp; </a>
+            <?php
+            endforeach;
+            if (is_category()) {
+                echo '';
+            }
+            if (is_single()) {
+                echo '<span>' . '| ' . esc_html(get_the_title()) . '</span>';
+            }
+            ?>
+        </div>
+<?php
+    }
 }

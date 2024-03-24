@@ -1,6 +1,6 @@
 <?php get_header(); ?>
-Hello asd
-<section id="primary" class="content-area">
+
+<section id="prisearchResultsmary" class="content-area">
     <main id="main" class="site-main">
         <header class="page-header">
             <h1>
