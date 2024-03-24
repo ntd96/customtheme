@@ -80,16 +80,16 @@ h6,
 
 
 /*** Navbar ***/
-.navbar-light .navbar-nav .nav-link {
-    position: relative;
-    margin-left: 25px;
-    padding: 35px 0;
-    color: var(--light) !important;
-    outline: none;
-    transition: .5s;
-}
+    #navbarCollapse > ul > li > a {
+        position: relative;
+        margin-left: 25px;
+        padding: 35px 0;
+        color: var(--light) !important;
+        outline: none;
+        transition: .5s;
+    }
 
-.sticky-top.navbar-light .navbar-nav .nav-link {
+.sticky-top #navbarCollapse > ul > li > a {
     padding: 20px 0;
     color: var(--dark) !important;
 }
